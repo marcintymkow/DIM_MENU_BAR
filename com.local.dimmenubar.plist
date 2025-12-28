@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Unikalna nazwa agenta -->
+    <key>Label</key>
+    <string>com.local.dimmenubar</string>
+    
+    <!-- Ścieżka do aplikacji - ZMIEŃ NA SWOJĄ -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/TWOJ_USER/Applications/DimMenuBar.app/Contents/MacOS/DimMenuBar</string>
+    </array>
+    
+    <!-- Uruchom przy logowaniu -->
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <!-- Nie restartuj automatycznie po zamknięciu -->
+    <key>KeepAlive</key>
+    <false/>
+    
+    <!-- Typ procesu - interaktywny (GUI) -->
+    <key>ProcessType</key>
+    <string>Interactive</string>
+    
+    <!-- Logi (opcjonalne) -->
+    <key>StandardOutPath</key>
+    <string>/tmp/dimmenubar.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/tmp/dimmenubar.error.log</string>
+</dict>
+</plist>
