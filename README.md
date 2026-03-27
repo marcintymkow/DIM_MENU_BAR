@@ -208,3 +208,7 @@ If macOS blocks interaction, try adding the app under
 
 - macOS 11.0 (Big Sur) or later
 - Xcode Command Line Tools (`xcode-select --install`)
+
+License MIT
+
+Author Marcin Tymków
