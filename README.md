@@ -1,6 +1,6 @@
-# ☀️ DimMenuBar - Flat Design
+# ☀️ DimMenuBar — flat design
 
-Minimalistyczna kontrola jasności ekranu w menu bar macOS.
+Minimal screen brightness control from the macOS menu bar.
 
 ```
     ┌─────────────────────┐
@@ -15,45 +15,43 @@ Minimalistyczna kontrola jasności ekranu w menu bar macOS.
     └─────────────────────┘
 ```
 
-## Szybka instalacja (automatyczna)
+## Quick install (automated)
 
 ```bash
-# Pobierz pliki i uruchom instalator
 chmod +x install-dimmenubar.sh
 ./install-dimmenubar.sh install
 ```
 
-**To wszystko!** Aplikacja:
-- Zainstaluje się w `~/Applications/`
-- Skonfiguruje autostart
-- Uruchomi się od razu
+That’s it. The installer:
 
-## Zarządzanie
+- Builds and installs the app under `~/Applications/`
+- Sets up a Launch Agent for login startup
+- Launches the app immediately
+
+## Managing the app
 
 ```bash
-# Status instalacji
+# Installation status
 ./install-dimmenubar.sh status
 
-# Restart aplikacji
+# Restart
 ./install-dimmenubar.sh restart
 
-# Zatrzymaj
+# Stop
 ./install-dimmenubar.sh stop
 
-# Odinstaluj całkowicie
+# Remove completely
 ./install-dimmenubar.sh uninstall
 ```
 
-## Ręczna instalacja
+## Manual install
 
-### 1. Kompilacja
+### 1. Build
 
 ```bash
-# Stwórz strukturę aplikacji
 mkdir -p ~/Applications/DimMenuBar.app/Contents/MacOS
 mkdir -p ~/Applications/DimMenuBar.app/Contents/Resources
 
-# Kompiluj
 swiftc DimMenuBar.swift \
     -o ~/Applications/DimMenuBar.app/Contents/MacOS/DimMenuBar \
     -framework Cocoa \
@@ -87,46 +85,44 @@ cat > ~/Applications/DimMenuBar.app/Contents/Info.plist << 'EOF'
 EOF
 ```
 
-### 3. LaunchAgent (Autostart)
+### 3. Launch Agent (autostart)
 
 ```bash
-# Skopiuj plist (zmień USER na swoją nazwę użytkownika)
 cp com.local.dimmenubar.plist ~/Library/LaunchAgents/
 
-# Edytuj ścieżkę w pliku
+# Edit the path inside the plist to match your user home
 nano ~/Library/LaunchAgents/com.local.dimmenubar.plist
-# Zmień /Users/TWOJ_USER/ na swoją ścieżkę
+# Replace /Users/TWOJ_USER/ with your actual path
 
-# Załaduj agent
 launchctl load ~/Library/LaunchAgents/com.local.dimmenubar.plist
 ```
 
-### 4. Uruchom
+### 4. Run
 
 ```bash
 open ~/Applications/DimMenuBar.app
 ```
 
-## Komendy LaunchAgent
+## Launch Agent commands
 
 ```bash
-# Załaduj (włącz autostart)
+# Load (enable autostart)
 launchctl load ~/Library/LaunchAgents/com.local.dimmenubar.plist
 
-# Wyładuj (wyłącz autostart)
+# Unload (disable autostart)
 launchctl unload ~/Library/LaunchAgents/com.local.dimmenubar.plist
 
-# Sprawdź status
+# Check status
 launchctl list | grep dimmenubar
 
-# Uruchom ręcznie przez launchctl
+# Start via launchctl
 launchctl start com.local.dimmenubar
 
-# Zatrzymaj
+# Stop via launchctl
 launchctl stop com.local.dimmenubar
 ```
 
-## Struktura plików
+## File layout
 
 ```
 ~/Applications/
@@ -134,84 +130,81 @@ launchctl stop com.local.dimmenubar
     └── Contents/
         ├── Info.plist
         ├── MacOS/
-        │   └── DimMenuBar          # plik wykonywalny
+        │   └── DimMenuBar          # executable
         └── Resources/
 
 ~/Library/LaunchAgents/
-└── com.local.dimmenubar.plist      # konfiguracja autostartu
+└── com.local.dimmenubar.plist      # autostart config
 ```
 
-## Funkcje
+## Features
 
-| Element | Opis |
-|---------|------|
-| ◉ Ikona | Biała ikona słońca w menu bar |
-| Slider | Płynna regulacja 5%-100% |
-| Presety | Szybkie przyciski: 100, 75, 50, 25, 10 |
-| RESET | Przywróć 100% jasności |
-| QUIT | Zamknij aplikację |
+| Item | Description |
+|------|-------------|
+| Sun icon | White sun icon in the menu bar |
+| Slider | Smooth adjustment from 5% to 100% |
+| Presets | Quick buttons: 100, 75, 50, 25, 10 |
+| RESET | Restore 100% brightness |
+| QUIT | Quit the app |
 
-## Dostosowanie
+## How it works
 
-### Zmiana zakresu jasności
+DimMenuBar adjusts the **display gamma / transfer curve** for the main screen using Core Graphics (`CGSetDisplayTransferByFormula`). That dims what you see without changing the system brightness slider—useful when you want extra dimming or a software-only control from the bar.
 
-W pliku `DimMenuBar.swift`, funkcja `setBrightness`:
+## Customization
+
+### Minimum brightness
+
+In `DimMenuBar.swift`, inside `setBrightness`:
 
 ```swift
-// Minimalna jasność (domyślnie 5%)
 currentBrightness = max(0.05, min(1.0, value))
-//                      ↑ zmień na 0.01 dla 1%
+//                      ↑ change to 0.01 for 1% minimum
 ```
 
-### Reset jasności przy zamykaniu
+### Reset brightness on quit
 
-Odkomentuj linię w `applicationWillTerminate`:
+Uncomment in `applicationWillTerminate`:
 
 ```swift
 func applicationWillTerminate(_ notification: Notification) {
-    BrightnessController.shared.resetBrightness()  // ← odkomentuj
+    BrightnessController.shared.resetBrightness()  // uncomment
 }
 ```
 
-### Zmiana kolorów interfejsu
+### UI colors
 
-W klasach widoków (`BrightnessMenuView`, itp.):
+In the view classes (`BrightnessMenuView`, etc.):
 
 ```swift
-// Kolor tła
 layer?.backgroundColor = NSColor(white: 0.1, alpha: 1.0).cgColor
-
-// Kolor tekstu
 titleLabel.textColor = NSColor.white.withAlphaComponent(0.5)
 ```
 
-## Rozwiązywanie problemów
+## Troubleshooting
 
-**Aplikacja nie startuje automatycznie?**
+**App does not start at login**
 
 ```bash
-# Sprawdź czy plist jest załadowany
 launchctl list | grep dimmenubar
-
-# Sprawdź logi
 cat /tmp/dimmenubar.error.log
 ```
 
-**Ikona nie wyświetla się poprawnie?**
+**Icon looks wrong**
 
-Na starszych wersjach macOS możesz zamienić rysowanie ikony na emoji:
+On older macOS versions you can switch to an emoji:
 
 ```swift
 button.title = "☀️"
 button.image = nil
 ```
 
-**Brak uprawnień?**
+**Permissions**
 
-Dodaj aplikację w:
-Ustawienia systemowe → Prywatność i bezpieczeństwo → Dostępność
+If macOS blocks interaction, try adding the app under  
+**System Settings → Privacy & Security → Accessibility** (if prompted).
 
-## Wymagania
+## Requirements
 
-- macOS 11.0 (Big Sur) lub nowszy
+- macOS 11.0 (Big Sur) or later
 - Xcode Command Line Tools (`xcode-select --install`)
